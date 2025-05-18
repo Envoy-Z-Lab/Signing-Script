@@ -61,17 +61,17 @@ mkdir -p "$destination_dir"
 # Move keys to the destination directory
 mv "$HOME/.android-certs/"* "$destination_dir"
 
+# Remove the ~/.android-certs directory after moving keys
+rm -rf ~/.android-certs
+
 # Write keys.mk file
 printf "PRODUCT_DEFAULT_DEV_CERTIFICATE := %s/releasekey\n" "$destination_dir" > "$destination_dir/keys.mk"
 
 # Warn user to back up keys
 echo "IMPORTANT: Please make a backup copy of your keys in '$destination_dir' as they are essential for signing your builds."
 
-# Prompt to generate BUILD.bazel
-read -r -p "Do you want to generate a BUILD.bazel file for Bazel integration? (y/n): " gen_bazel
-
-if [ "$gen_bazel" = "y" ]; then
-    cat > "$destination_dir/BUILD.bazel" <<EOF
+# Generate BUILD.bazel
+cat > "$destination_dir/BUILD.bazel" <<EOF
 filegroup(
     name = "android_certificate_directory",
     srcs = glob([
@@ -81,8 +81,7 @@ filegroup(
     visibility = ["//visibility:public"],
 )
 EOF
-    echo "BUILD.bazel file created at $destination_dir/BUILD.bazel"
-fi
+echo "BUILD.bazel file created at $destination_dir/BUILD.bazel"
 
 # Set appropriate permissions
 chmod -R 755 "$destination_dir"
