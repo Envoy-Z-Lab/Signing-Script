@@ -81,7 +81,6 @@ filegroup(
     visibility = ["//visibility:public"],
 )
 EOF
-echo "BUILD.bazel file created at $destination_dir/BUILD.bazel"
 
 # Set appropriate permissions
 chmod -R 755 "$destination_dir"
