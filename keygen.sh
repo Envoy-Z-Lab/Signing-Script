@@ -43,9 +43,16 @@ fi
 # Create certificate directory
 mkdir -p ~/.android-certs
 
-# Generate keys with updated list of key types
+# Generate keys with updated list of key types without manual password input
 for key_type in releasekey platform shared media networkstack verity otakey testkey cyngn-priv-app sdk_sandbox bluetooth verifiedboot nfc; do
-    ./development/tools/make_key "$HOME/.android-certs/$key_type" "$subject"
+    echo "Generating key: $key_type"
+    echo | ./development/tools/make_key "$HOME/.android-certs/$key_type" "$subject"
+
+    # Check if key files exist
+    if [[ ! -f "$HOME/.android-certs/$key_type.pk8" || ! -f "$HOME/.android-certs/$key_type.x509.pem" ]]; then
+        echo "Error: Key files for '$key_type' were not generated properly."
+        exit 1
+    fi
 done
 
 # Create destination directory
